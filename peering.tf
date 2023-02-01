@@ -1,23 +1,24 @@
-// UK South Hub prod to heritage-nle-int
+// example of in subscription peering 
 module "uksouth_prod_heritage_nle_int" {
-  count  = var.environment == "prod-int" && var.region == "uksouth" ? 1 : 0
-  source = "./vnet_peering"
+  # count  = var.environment == "prod-int" && var.region == "uksouth" ? 1 : 0
+  source = "github.com/hmcts/terraform-module-vnet-peering"
 
   peerings = {
     source = {
-      name           = "HmctsHubProdToHeritageNLEint"
-      vnet           = var.vnet_name
-      resource_group = "${var.name}-hub-${var.environment}"
+      name           = "srctodst"
+      vnet           =  var.vnet_name
+      resource_group = "main-rg"
     }
     target = {
-      name           = "HeritageNLEintToHmctsHubProd"
-      vnet           = "vnet-nle-int-01"
-      resource_group = "InternalSpoke-rg"
+      name           = "dsttosrc"
+      vnet           = "vnet-dst"
+      resource_group = "vnet-dst-rg"
     }
   }
 
   providers = {
     azurerm.initiator = azurerm
-    azurerm.target    = azurerm.heritage_nle_int
+    azurerm.target    = azurerm.vnet-dst-rg
+        # azurerm.target    = azurerm
   }
 }
